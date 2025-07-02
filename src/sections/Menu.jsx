@@ -1,8 +1,64 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { allCocktails } from '../../constants/index';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
 
 const Menu = () => {
 	const [currentIndex, setCurrentIndex] = useState(0);
+
+	const contentRef = useRef();
+
+	useGSAP(() => {
+		const menuTl = gsap.timeline({
+			scrollTrigger: {
+				trigger: '#menu',
+				start: '-30% bottom',
+				end: 'center bottom',
+				scrub: true,
+			},
+		});
+
+		menuTl
+			.to('#menu', {
+				y: -100,
+				ease: 'power1.inOut',
+			})
+			.fromTo(
+				'#m-right-leaf',
+				{ opacity: 0, yPercent: -20 },
+				{ opacity: 100, yPercent: 40, ease: 'power1.inOut' },
+				'<'
+			)
+			.to('#m-left-leaf', {
+				y: -10,
+				ease: 'power1.inOut',
+			});
+	});
+
+	useGSAP(() => {
+		gsap.fromTo(
+			'#title',
+			{ opacity: 0, x: -50 },
+			{ opacity: 1, duration: 1, x: 0, ease: 'expo.inOut' }
+		);
+		gsap.fromTo(
+			'.cocktail img',
+			{ opacity: 0, xPercent: -100 },
+			{ xPercent: 0, opacity: 1, duration: 1, ease: 'power1.inOut' }
+		);
+
+		gsap.fromTo(
+			'.details h2',
+			{ opacity: 0 },
+			{ opacity: 100, duration: 2, ease: 'expo.inOut' }
+		);
+
+		gsap.fromTo(
+			'.details p',
+			{ opacity: 0 },
+			{ opacity: 100, duration: 2, ease: 'expo.inOut' }
+		);
+	}, [currentIndex]);
 
 	const totalCocktails = allCocktails.length;
 
@@ -85,6 +141,16 @@ const Menu = () => {
 
 				<div className='cocktail'>
 					<img src={currentCocktail.image} className='object-contain' />
+				</div>
+				<div className='recipe'>
+					<div ref={contentRef} className='info'>
+						<p>Recipe for</p>
+						<p id='title'>{currentCocktail.name}</p>
+					</div>
+					<div className='details'>
+						<h2>{currentCocktail.title}</h2>
+						<p>{currentCocktail.description}</p>
+					</div>
 				</div>
 			</div>
 		</section>
